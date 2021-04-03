@@ -5,7 +5,7 @@
 import time
 import sys
 
-from rgbmatrix import RGBMatrix, RGBMatrixOptions
+from rgbmatrix import RGBMatrix, RGBMatrixOptions, graphics
 from PIL import Image
 
 
@@ -113,13 +113,18 @@ seperatorSprite =[
         [B, R, B],
         [B, R, B]
     ],
+        [# BLANK
+        [B, B, B],
+        [B, B, B],
+        [B, B, B],
+        [B, B, B],
+        [B, B, B]
+    ],
 ]
 
 
-
-
-
-def draw_seperator(displayDigit, xOffset, yOffset): # Function to draw time seperator
+def draw_seperator(displayDigit, xOffset, yOffset):
+    # Function to draw the clock seperator
     xOriginDigit = 0                               # Where the first number x
     yOriginDigit = 0                               # Where the first number y
     rgbComponent = 0                               # rgb component value (0=R, 1=G, 2=B)
@@ -128,23 +133,16 @@ def draw_seperator(displayDigit, xOffset, yOffset): # Function to draw time sepe
     r = 0                                          # Red value
     g = 0                                          # Green value
     b = 0                                          # Blue
-
-
     while spriteRow <5:
         while spriteColumn <3:
             while rgbComponent <3:
-              
                 if rgbComponent == 0:
                     r =(seperatorSprite[displayDigit][spriteRow][spriteColumn][rgbComponent]) # Set BLUE component value
-            
                 elif rgbComponent == 1:
                     g = (seperatorSprite[displayDigit][spriteRow][spriteColumn][rgbComponent]) # Set GREEN component value
-            
                 else:
                     b = (seperatorSprite[displayDigit][spriteRow][spriteColumn][rgbComponent]) # Set BLUE component value
- 
                 matrix.SetPixel(xOriginDigit+spriteColumn+xOffset, yOriginDigit+spriteRow+yOffset, r, g, b)
-
                 rgbComponent += 1
             rgbComponent = 0
             spriteColumn += 1
@@ -152,13 +150,8 @@ def draw_seperator(displayDigit, xOffset, yOffset): # Function to draw time sepe
         spriteRow += 1
 
 
-
-
-
-
-
-
-def draw_digit(displayDigit, xOffset, yOffset):    # Function to draw time number
+def draw_digit(displayDigit, xOffset, yOffset):           
+    # Function to draw a digit
     xOriginDigit = 0                               # Where the first number x
     yOriginDigit = 0                               # Where the first number y
     rgbComponent = 0                               # rgb component value (0=R, 1=G, 2=B)
@@ -167,23 +160,16 @@ def draw_digit(displayDigit, xOffset, yOffset):    # Function to draw time numbe
     r = 0                                          # Red value
     g = 0                                          # Green value
     b = 0                                          # Blue
-
-
     while spriteRow <5:
         while spriteColumn <3:
             while rgbComponent <3:
-              
                 if rgbComponent == 0:
                     r =(numberSprite[displayDigit][spriteRow][spriteColumn][rgbComponent]) # Set BLUE component value
-            
                 elif rgbComponent == 1:
                     g = (numberSprite[displayDigit][spriteRow][spriteColumn][rgbComponent]) # Set GREEN component value
-            
                 else:
                     b = (numberSprite[displayDigit][spriteRow][spriteColumn][rgbComponent]) # Set BLUE component value
- 
                 matrix.SetPixel(xOriginDigit+spriteColumn+xOffset, yOriginDigit+spriteRow+yOffset, r, g, b)
-
                 rgbComponent += 1
             rgbComponent = 0
             spriteColumn += 1
@@ -191,33 +177,22 @@ def draw_digit(displayDigit, xOffset, yOffset):    # Function to draw time numbe
         spriteRow += 1
 
 
+def display_big_clock (clockStartX, clockStartY):
+    # Function to draw a full clock (HH:MM:SS)
 
-
-
-
-
-
-
-while True:
-    # Capture the time
+    # Capture local time
     hour = time.localtime().tm_hour
     minute = time.localtime().tm_min
     second = time.localtime().tm_sec
-
-    # Parse out the digits
+    
+    # Seperate HH MM SS
     hourFirst = (int(hour/10))
     hourSecond = (int(hour%10))
     minuteFirst = (int(minute/10))
     minuteSecond = (int(minute%10))
     secondFirst = (int(second/10))
     secondSecond = (int(second%10))
-
-
-
-
-    clockStartX = 2
-    clockStartY = 10
-
+    
     # Draw the first hour digit
     displayDigit = hourFirst
     xOffset = 0 + clockStartX
@@ -230,13 +205,83 @@ while True:
     yOffset = 0 + clockStartY
     draw_digit(displayDigit,xOffset,yOffset)
 
-
     # Draw the seperator
     displayDigit = 0
     xOffset = 7 + clockStartX
     yOffset = 0 + clockStartY
     draw_seperator(displayDigit,xOffset,yOffset)
 
+    # Draw the first minute digit
+    displayDigit = minuteFirst
+    xOffset = 10 + clockStartX
+    yOffset = 0 + clockStartY
+    draw_digit(displayDigit,xOffset,yOffset)
+
+    # Draw the second minute digit
+    displayDigit = minuteSecond
+    xOffset = 14 + clockStartX
+    yOffset = 0 + clockStartY
+    draw_digit(displayDigit,xOffset,yOffset)
+
+    # Draw the seperator
+    displayDigit = 0
+    xOffset = 17 + clockStartX
+    yOffset = 0 + clockStartY
+    draw_seperator(displayDigit,xOffset,yOffset)
+
+    # Draw the first second digit
+    displayDigit = secondFirst
+    xOffset = 20 + clockStartX
+    yOffset = 0 + clockStartY
+    draw_digit(displayDigit,xOffset,yOffset)
+
+    # Draw the second second digit
+    displayDigit = secondSecond
+    xOffset = 24 + clockStartX
+    yOffset = 0 + clockStartY
+    draw_digit(displayDigit,xOffset,yOffset)
+
+
+def display_small_clock (clockStartX,clockStartY, seperatorDisplay):
+    # Function to draw a small clock (HH : MM)
+    
+    # Capture local time
+    hour = time.localtime().tm_hour
+    minute = time.localtime().tm_min
+    second = time.localtime().tm_sec
+    
+    # Seperate HH MM SS
+    hourFirst = (int(hour/10))
+    hourSecond = (int(hour%10))
+    minuteFirst = (int(minute/10))
+    minuteSecond = (int(minute%10))
+    secondFirst = (int(second/10))
+    secondSecond = (int(second%10))
+    
+    # Draw the first hour digit
+    displayDigit = hourFirst
+    xOffset = 0 + clockStartX
+    yOffset = 0 + clockStartY
+    draw_digit(displayDigit,xOffset,yOffset)
+
+    # Draw the second hour digit
+    displayDigit = hourSecond
+    xOffset = 4 + clockStartX
+    yOffset = 0 + clockStartY
+    draw_digit(displayDigit,xOffset,yOffset)
+
+    if seperatorDisplay == True:
+        # Draw the seperator
+        displayDigit = 0
+        xOffset = 7 + clockStartX
+        yOffset = 0 + clockStartY
+        draw_seperator(displayDigit,xOffset,yOffset)
+    else:
+        # Draw the seperator
+        displayDigit = 1
+        xOffset = 7 + clockStartX
+        yOffset = 0 + clockStartY
+        draw_seperator(displayDigit,xOffset,yOffset)
 
     # Draw the first minute digit
     displayDigit = minuteFirst
@@ -251,26 +296,23 @@ while True:
     draw_digit(displayDigit,xOffset,yOffset)
 
 
-    # Draw the seperator
-    displayDigit = 0
-    xOffset = 17 + clockStartX
-    yOffset = 0 + clockStartY
-    draw_seperator(displayDigit,xOffset,yOffset)
+
+# This is where is all starts
+
+clockStartX = 2
+clockStartY = 1
+seperatorDisplay = True
+
+white = graphics.Color(255, 255, 255)
+graphics.DrawLine(matrix, 1, 7, 30, 7, white)
 
 
-    # Draw the first second digit
-    displayDigit = secondFirst
-    xOffset = 20 + clockStartX
-    yOffset = 0 + clockStartY
-    draw_digit(displayDigit,xOffset,yOffset)
-
-    # Draw the second second digit
-    displayDigit = secondSecond
-    xOffset = 24 + clockStartX
-    yOffset = 0 + clockStartY
-    draw_digit(displayDigit,xOffset,yOffset)
-
+while True:
+    # display_small_clock(clockStartX,clockStartY, seperatorDisplay)
+    display_big_clock(clockStartX,clockStartY)
+    seperatorDisplay = not seperatorDisplay
     time.sleep(1)
+
 
 # Wait for CTRL-C
 try:
