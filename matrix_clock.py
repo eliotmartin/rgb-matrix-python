@@ -29,6 +29,7 @@ matrix = RGBMatrix(options=options)
 # Lists for colours
 B = [0, 0, 0]           # Black
 W = [255, 255, 255]     # White
+R = [255, 0, 0]         # Red
 
 # List for number sprites
 numberSprite =[
@@ -104,20 +105,68 @@ numberSprite =[
     ],
 ]
 
-# Capture the time
-hour = time.localtime().tm_hour
-minute = time.localtime().tm_min
-second = time.localtime().tm_sec
+seperatorSprite =[
+    [# :
+        [B, R, B],
+        [B, R, B],
+        [B, B, B],
+        [B, R, B],
+        [B, R, B]
+    ],
+]
 
-def draw_digit(displayDigit, xOffset, yOffset):     # Function to draw hour number
-    xOriginHour_1 = 0                               # Where the first number x
-    yOriginHour_1 = 0                               # Where the first number y
-    rgbComponent = 0                                # rgb compeonent value (0=R, 1=G, 2=B)
-    spriteRow = 0                                   # row of colours across a sprite
-    spriteColumn = 0                                # column of colours down a sprite
-    r = 0                                           # Red value
-    g = 0                                           # Green value
-    b = 0                                           # Blue
+
+
+
+
+def draw_seperator(displayDigit, xOffset, yOffset): # Function to draw time seperator
+    xOriginDigit = 0                               # Where the first number x
+    yOriginDigit = 0                               # Where the first number y
+    rgbComponent = 0                               # rgb component value (0=R, 1=G, 2=B)
+    spriteRow = 0                                  # row of colours across a sprite
+    spriteColumn = 0                               # column of colours down a sprite
+    r = 0                                          # Red value
+    g = 0                                          # Green value
+    b = 0                                          # Blue
+
+
+    while spriteRow <5:
+        while spriteColumn <3:
+            while rgbComponent <3:
+              
+                if rgbComponent == 0:
+                    r =(seperatorSprite[displayDigit][spriteRow][spriteColumn][rgbComponent]) # Set BLUE component value
+            
+                elif rgbComponent == 1:
+                    g = (seperatorSprite[displayDigit][spriteRow][spriteColumn][rgbComponent]) # Set GREEN component value
+            
+                else:
+                    b = (seperatorSprite[displayDigit][spriteRow][spriteColumn][rgbComponent]) # Set BLUE component value
+ 
+                matrix.SetPixel(xOriginDigit+spriteColumn+xOffset, yOriginDigit+spriteRow+yOffset, r, g, b)
+
+                rgbComponent += 1
+            rgbComponent = 0
+            spriteColumn += 1
+        spriteColumn = 0
+        spriteRow += 1
+
+
+
+
+
+
+
+
+def draw_digit(displayDigit, xOffset, yOffset):    # Function to draw time number
+    xOriginDigit = 0                               # Where the first number x
+    yOriginDigit = 0                               # Where the first number y
+    rgbComponent = 0                               # rgb component value (0=R, 1=G, 2=B)
+    spriteRow = 0                                  # row of colours across a sprite
+    spriteColumn = 0                               # column of colours down a sprite
+    r = 0                                          # Red value
+    g = 0                                          # Green value
+    b = 0                                          # Blue
 
 
     while spriteRow <5:
@@ -133,19 +182,16 @@ def draw_digit(displayDigit, xOffset, yOffset):     # Function to draw hour numb
                 else:
                     b = (numberSprite[displayDigit][spriteRow][spriteColumn][rgbComponent]) # Set BLUE component value
  
-                matrix.SetPixel(xOriginHour_1+spriteColumn+xOffset, yOriginHour_1+spriteRow+yOffset, r, g, b)
- 
-                # print ("Component:",rgbComponent)
-                # print ("Colour List", numberSprite[hour_1][spriteRow][spriteColumn])
-                # print ("Row", numberSprite[hour_1][spriteRow])
-                # print ("sprite", numberSprite[hour_1])
-                # print ("-----------------------") 
+                matrix.SetPixel(xOriginDigit+spriteColumn+xOffset, yOriginDigit+spriteRow+yOffset, r, g, b)
 
                 rgbComponent += 1
             rgbComponent = 0
             spriteColumn += 1
         spriteColumn = 0
         spriteRow += 1
+
+
+
 
 
 
@@ -167,40 +213,61 @@ while True:
     secondSecond = (int(second%10))
 
 
+
+
+    clockStartX = 2
+    clockStartY = 10
+
     # Draw the first hour digit
     displayDigit = hourFirst
-    xOffset = 0
-    yOffset = 0
+    xOffset = 0 + clockStartX
+    yOffset = 0 + clockStartY
     draw_digit(displayDigit,xOffset,yOffset)
 
     # Draw the second hour digit
     displayDigit = hourSecond
-    xOffset = 4
-    yOffset = 0
+    xOffset = 4 + clockStartX
+    yOffset = 0 + clockStartY
     draw_digit(displayDigit,xOffset,yOffset)
 
-    # Draw the first hour digit
+
+    # Draw the seperator
+    displayDigit = 0
+    xOffset = 7 + clockStartX
+    yOffset = 0 + clockStartY
+    draw_seperator(displayDigit,xOffset,yOffset)
+
+
+    # Draw the first minute digit
     displayDigit = minuteFirst
-    xOffset = 8
-    yOffset = 0
+    xOffset = 10 + clockStartX
+    yOffset = 0 + clockStartY
     draw_digit(displayDigit,xOffset,yOffset)
 
-    # Draw the second hour digit
+    # Draw the second minute digit
     displayDigit = minuteSecond
-    xOffset = 12
-    yOffset = 0
+    xOffset = 14 + clockStartX
+    yOffset = 0 + clockStartY
     draw_digit(displayDigit,xOffset,yOffset)
+
+
+    # Draw the seperator
+    displayDigit = 0
+    xOffset = 17 + clockStartX
+    yOffset = 0 + clockStartY
+    draw_seperator(displayDigit,xOffset,yOffset)
+
 
     # Draw the first second digit
     displayDigit = secondFirst
-    xOffset = 16
-    yOffset = 0
+    xOffset = 20 + clockStartX
+    yOffset = 0 + clockStartY
     draw_digit(displayDigit,xOffset,yOffset)
 
     # Draw the second second digit
     displayDigit = secondSecond
-    xOffset = 20
-    yOffset = 0
+    xOffset = 24 + clockStartX
+    yOffset = 0 + clockStartY
     draw_digit(displayDigit,xOffset,yOffset)
 
     time.sleep(1)
