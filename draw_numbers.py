@@ -306,7 +306,7 @@ def draw_NumberSprite(displayNumber, spriteXOffset, spriteYOffset, inverseFlag, 
     greenComponent = 0                             # Green value
     blueComponent = 0                              # Blue
     
-    
+
    
     # Setup rows and columns depending on the size of sprite required
     if spriteSize == "large":
@@ -378,57 +378,56 @@ def processLocalTime():
 
 # process to display the clock on the matrix
 def displayClock(hourFirst, hourSecond, minuteFirst, minuteSecond, inverseFlag, spriteSize, spriteXOrigin, spriteYOrigin):
-
     if spriteSize == "large":
         #draw the large version
         # Draw first hour digit
         displayNumber = hourFirst
         spriteXOffset = 1
         spriteYOffset = 1
-        draw_NumberSprite (displayNumber, spriteXOffset, spriteYOffset, inverseFlag, spriteSize, spriteXOrigin, spriteXOrigin)
+        draw_NumberSprite (displayNumber, spriteXOffset, spriteYOffset, inverseFlag, spriteSize, spriteXOrigin, spriteYOrigin)
 
         # Draw second hour digit
         displayNumber = hourSecond
         spriteXOffset = 17
         spriteYOffset = 1
-        draw_NumberSprite (displayNumber, spriteXOffset, spriteYOffset, inverseFlag, spriteSize, spriteXOrigin, spriteXOrigin)
+        draw_NumberSprite (displayNumber, spriteXOffset, spriteYOffset, inverseFlag, spriteSize, spriteXOrigin, spriteYOrigin)
 
         # Draw first minute digit
         displayNumber = minuteFirst
         spriteXOffset = 1
         spriteYOffset = 17
-        draw_NumberSprite (displayNumber, spriteXOffset, spriteYOffset, inverseFlag, spriteSize, spriteXOrigin, spriteXOrigin)
+        draw_NumberSprite (displayNumber, spriteXOffset, spriteYOffset, inverseFlag, spriteSize, spriteXOrigin, spriteYOrigin)
 
         # Draw second minute digit
         displayNumber = minuteSecond
         spriteXOffset = 17
         spriteYOffset = 17
-        draw_NumberSprite (displayNumber, spriteXOffset, spriteYOffset, inverseFlag, spriteSize, spriteXOrigin, spriteXOrigin)
+        draw_NumberSprite (displayNumber, spriteXOffset, spriteYOffset, inverseFlag, spriteSize, spriteXOrigin, spriteYOrigin)
     else:
         # Draw the small version
         # Draw first hour digit
         displayNumber = hourFirst
         spriteXOffset = 1
         spriteYOffset = 1
-        draw_NumberSprite (displayNumber, spriteXOffset, spriteYOffset, inverseFlag, spriteSize, spriteXOrigin, spriteXOrigin)
+        draw_NumberSprite (displayNumber, spriteXOffset, spriteYOffset, inverseFlag, spriteSize, spriteXOrigin, spriteYOrigin)
 
         # Draw second hour digit
         displayNumber = hourSecond
         spriteXOffset = 10
         spriteYOffset = 1
-        draw_NumberSprite (displayNumber, spriteXOffset, spriteYOffset, inverseFlag, spriteSize, spriteXOrigin, spriteXOrigin)
+        draw_NumberSprite (displayNumber, spriteXOffset, spriteYOffset, inverseFlag, spriteSize, spriteXOrigin, spriteYOrigin)
 
         # Draw first minute digit
         displayNumber = minuteFirst
         spriteXOffset = 1
         spriteYOffset = 10
-        draw_NumberSprite (displayNumber, spriteXOffset, spriteYOffset, inverseFlag, spriteSize, spriteXOrigin, spriteXOrigin)
+        draw_NumberSprite (displayNumber, spriteXOffset, spriteYOffset, inverseFlag, spriteSize, spriteXOrigin, spriteYOrigin)
 
         # Draw second minute digit
         displayNumber = minuteSecond
         spriteXOffset = 10
         spriteYOffset = 10
-        draw_NumberSprite (displayNumber, spriteXOffset, spriteYOffset, inverseFlag, spriteSize, spriteXOrigin, spriteXOrigin)
+        draw_NumberSprite (displayNumber, spriteXOffset, spriteYOffset, inverseFlag, spriteSize, spriteXOrigin, spriteYOrigin)
 
 
 
@@ -439,15 +438,18 @@ hourFirst, hourSecond, minuteFirst, minuteSecond, secondFirst, secondSecond = pr
 inverseFlag = False
 spriteSize = "small"
 spriteXOrigin = 7                            
-spriteYOrigin = 7                            
+spriteYOrigin = 7
+moveDirection = 1                 
 
 
 while True:
     hourFirst, hourSecond, minuteFirst, minuteSecond, secondFirst, secondSecond = processLocalTime()
     offscreen_canvas.Clear()
-    displayClock (hourFirst, hourSecond, minuteFirst, minuteSecond, inverseFlag, spriteSize, spriteXOrigin, spriteYOrigin)
+    displayClock(hourFirst, hourSecond, minuteFirst, minuteSecond, inverseFlag, spriteSize, spriteXOrigin, spriteYOrigin)
     offscreen_canvas = matrix.SwapOnVSync(offscreen_canvas)  
-    time.sleep(1)
+    time.sleep(0.005)
+
+   
 
 
 
