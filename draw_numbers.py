@@ -6,6 +6,7 @@ import sys
 import json
 
 from rgbmatrix import RGBMatrix, RGBMatrixOptions, graphics
+from progress_bar import drawProgressBarBox, computeProgress, drawProgressBar
 from PIL import Image
 
 # Configuration for the matrix
@@ -20,9 +21,9 @@ options.scan_mode = 0
 options.multiplexing = 0
 options.gpio_slowdown = 4
 options.brightness = 100
-options.show_refresh_rate = 0
+options.drop_privileges = False
 matrix = RGBMatrix(options=options)
-offscreen_canvas = matrix.CreateFrameCanvas()
+
 
 # Define colours
 bb = [0, 0, 0]
@@ -297,7 +298,7 @@ def waitOnKey():
         sys.exit(0)
 
 # Function to draw number sprite
-def draw_NumberSprite(displayNumber, spriteXOffset, spriteYOffset, inverseFlag, spriteSize, spriteXOrigin, spriteYOrigin):
+def draw_NumberSprite(offscreen_canvas, displayNumber, spriteXOffset, spriteYOffset, inverseFlag, spriteSize, spriteXOrigin, spriteYOrigin):
 
     rgbComponent = 0                               # Red, Green, or Blue component (0=R, 1=G, 2=B)
     spriteRow = 0                                  # Counter for the rows of pixels being drawm
@@ -374,93 +375,105 @@ def processLocalTime():
     secondFirst = (int(second/10))
     secondSecond = (int(second%10))
     
-    return hourFirst, hourSecond, minuteFirst, minuteSecond, secondFirst, secondSecond
+    return hourFirst, hourSecond, minuteFirst, minuteSecond, secondFirst, secondSecond, second
 
 # process to display the clock on the matrix
-def displayClock(hourFirst, hourSecond, minuteFirst, minuteSecond, inverseFlag, spriteSize, spriteXOrigin, spriteYOrigin):
+def displayClock(offscreen_canvas, hourFirst, hourSecond, minuteFirst, minuteSecond, inverseFlag, spriteSize, spriteXOrigin, spriteYOrigin):
     if spriteSize == "large":
         #draw the large version
         # Draw first hour digit
         displayNumber = hourFirst
         spriteXOffset = 1
         spriteYOffset = 1
-        draw_NumberSprite (displayNumber, spriteXOffset, spriteYOffset, inverseFlag, spriteSize, spriteXOrigin, spriteYOrigin)
+        draw_NumberSprite (offscreen_canvas, displayNumber, spriteXOffset, spriteYOffset, inverseFlag, spriteSize, spriteXOrigin, spriteYOrigin)
 
         # Draw second hour digit
         displayNumber = hourSecond
         spriteXOffset = 17
         spriteYOffset = 1
-        draw_NumberSprite (displayNumber, spriteXOffset, spriteYOffset, inverseFlag, spriteSize, spriteXOrigin, spriteYOrigin)
+        draw_NumberSprite (offscreen_canvas, displayNumber, spriteXOffset, spriteYOffset, inverseFlag, spriteSize, spriteXOrigin, spriteYOrigin)
 
         # Draw first minute digit
         displayNumber = minuteFirst
         spriteXOffset = 1
         spriteYOffset = 17
-        draw_NumberSprite (displayNumber, spriteXOffset, spriteYOffset, inverseFlag, spriteSize, spriteXOrigin, spriteYOrigin)
+        draw_NumberSprite (offscreen_canvas, displayNumber, spriteXOffset, spriteYOffset, inverseFlag, spriteSize, spriteXOrigin, spriteYOrigin)
 
         # Draw second minute digit
         displayNumber = minuteSecond
         spriteXOffset = 17
         spriteYOffset = 17
-        draw_NumberSprite (displayNumber, spriteXOffset, spriteYOffset, inverseFlag, spriteSize, spriteXOrigin, spriteYOrigin)
+        draw_NumberSprite (offscreen_canvas, displayNumber, spriteXOffset, spriteYOffset, inverseFlag, spriteSize, spriteXOrigin, spriteYOrigin)
     else:
         # Draw the small version
         # Draw first hour digit
         displayNumber = hourFirst
         spriteXOffset = 1
         spriteYOffset = 1
-        draw_NumberSprite (displayNumber, spriteXOffset, spriteYOffset, inverseFlag, spriteSize, spriteXOrigin, spriteYOrigin)
+        draw_NumberSprite (offscreen_canvas, displayNumber, spriteXOffset, spriteYOffset, inverseFlag, spriteSize, spriteXOrigin, spriteYOrigin)
 
         # Draw second hour digit
         displayNumber = hourSecond
         spriteXOffset = 10
         spriteYOffset = 1
-        draw_NumberSprite (displayNumber, spriteXOffset, spriteYOffset, inverseFlag, spriteSize, spriteXOrigin, spriteYOrigin)
+        draw_NumberSprite (offscreen_canvas, displayNumber, spriteXOffset, spriteYOffset, inverseFlag, spriteSize, spriteXOrigin, spriteYOrigin)
 
         # Draw first minute digit
         displayNumber = minuteFirst
         spriteXOffset = 1
         spriteYOffset = 10
-        draw_NumberSprite (displayNumber, spriteXOffset, spriteYOffset, inverseFlag, spriteSize, spriteXOrigin, spriteYOrigin)
+        draw_NumberSprite (offscreen_canvas, displayNumber, spriteXOffset, spriteYOffset, inverseFlag, spriteSize, spriteXOrigin, spriteYOrigin)
 
         # Draw second minute digit
         displayNumber = minuteSecond
         spriteXOffset = 10
         spriteYOffset = 10
-        draw_NumberSprite (displayNumber, spriteXOffset, spriteYOffset, inverseFlag, spriteSize, spriteXOrigin, spriteYOrigin)
+        draw_NumberSprite (offscreen_canvas, displayNumber, spriteXOffset, spriteYOffset, inverseFlag, spriteSize, spriteXOrigin, spriteYOrigin)
 
 
 
-# Function test
+# Main
+def main():
 
-hourFirst, hourSecond, minuteFirst, minuteSecond, secondFirst, secondSecond = processLocalTime()
+    offscreen_canvas = matrix.CreateFrameCanvas()
 
-inverseFlag = False
-spriteSize = "small"
-spriteXOrigin = 7                            
-spriteYOrigin = 7
-moveDirection = 1                 
+    # Draw progress bar box
+    progressBarLength = 15
+    progressBarHeight = 3
+    progressBarXOrigin = 8
+    progressBarYOrigin = 22
+    progressCurrent = 0
+    progressTarget = 60
+    inverseFlag = False
+    spriteSize = "small"
+    spriteXOrigin = 7                            
+    spriteYOrigin = 3
+    
 
+    # display a small version of the clock            
+    while True:
 
-while True:
-    hourFirst, hourSecond, minuteFirst, minuteSecond, secondFirst, secondSecond = processLocalTime()
-    offscreen_canvas.Clear()
-    displayClock(hourFirst, hourSecond, minuteFirst, minuteSecond, inverseFlag, spriteSize, spriteXOrigin, spriteYOrigin)
-    offscreen_canvas = matrix.SwapOnVSync(offscreen_canvas)  
-    time.sleep(0.005)
+        #Clear the offscreen canvas
+        offscreen_canvas.Clear()
 
-   
+        # Get the local tim and brig the numbers back
+        hourFirst, hourSecond, minuteFirst, minuteSecond, secondFirst, secondSecond, second = processLocalTime()
+        
+        # compute the progress and display the progress bar
+        progressCurrent = second
+        drawProgressBarBox(offscreen_canvas,progressBarXOrigin,progressBarYOrigin,progressBarLength,progressBarHeight)
+        progressBarComputed = computeProgress(progressTarget, progressCurrent, progressBarLength)
+        drawProgressBar (offscreen_canvas, progressBarComputed, progressBarXOrigin, progressBarYOrigin, progressBarHeight)
+        
+        # Display the clock
+        displayClock(offscreen_canvas, hourFirst, hourSecond, minuteFirst, minuteSecond, inverseFlag, spriteSize, spriteXOrigin, spriteYOrigin)
+        offscreen_canvas = matrix.SwapOnVSync(offscreen_canvas)  
 
+        # Wait for a second
+        time.sleep(1)
 
+    # hang on for a key press
+    waitOnKey()
 
-
-
-
-
-
-
-
-
-# hang on for a key press
-waitOnKey()
-
+if __name__ == "__main__":
+    main()
