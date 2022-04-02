@@ -255,13 +255,12 @@ class callbackMessage:
                 brightnessValue = 100
                 matrix.brightness = brightnessValue
 
-        elif topic == "matrix/notify":
+        elif topic == "matrix/gif":
             print ("=================================================================")
             print (topic, "has been triggered")
             print ("=================================================================")
             self.displayMode = "gif"
 
-            
         else:
             print ("=================================================================")
             print (topic, "can't be handled")
@@ -287,7 +286,7 @@ def main():
     #client.on_log = on_log                                 # Bind log callback
     client.on_connect = on_connect                          # Bind on connect callback
     client.on_disconnect = on_disconnect                    # Bind on disconnect callback
-    client.on_message = cm.on_message        # Bind on message callback
+    client.on_message = cm.on_message                       # Bind on message callback
     clearTerminal()
 
     # Connect to MQTT Broker
