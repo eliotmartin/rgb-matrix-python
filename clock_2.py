@@ -259,18 +259,22 @@ class callbackMessage:
             print ("=================================================================")
             print (topic, "has been triggered")
             print ("=================================================================")
+            self.displayMode = "gif"
 
             
         else:
             print ("=================================================================")
             print (topic, "can't be handled")
             print ("=================================================================")
-            displayMode = "clock"
+            self.displayMode = "clock"
 
           
 # ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # Main
 def main():
+
+    cm = callbackMessage()
+
 
     # Configuration for MQTT
     broker = 'localhost'                                    # Address of MQTT Broker
@@ -283,7 +287,7 @@ def main():
     #client.on_log = on_log                                 # Bind log callback
     client.on_connect = on_connect                          # Bind on connect callback
     client.on_disconnect = on_disconnect                    # Bind on disconnect callback
-    client.on_message = callbackMessage().on_message        # Bind on message callback
+    client.on_message = cm.on_message        # Bind on message callback
     clearTerminal()
 
     # Connect to MQTT Broker
@@ -318,17 +322,21 @@ def main():
         hour, minute, second, hourFirst, hourSecond, minuteFirst, minuteSecond, secondFirst, secondSecond, second = processLocalTime()
 
         # Draw small digital clock
-        if callbackMessage().displayMode == "clock":
+        if cm.displayMode == "clock":
             clockDrawHours (offscreen_canvas_clock, hourFirst, hourSecond, smallNumberSpriteFlat, xOrigin, yOrigin, 0, 0)
             clockDrawMinutes (offscreen_canvas_clock, minuteFirst, minuteSecond, smallNumberSpriteFlat, xOrigin, yOrigin, 0, 8)
             clockDrawSeconds (offscreen_canvas_clock, secondFirst, secondSecond, smallNumberSpriteFlat, xOrigin, yOrigin, 0, 16)
             offscreen_canvas_clock = matrix.SwapOnVSync(offscreen_canvas_clock)
         else:
             imageFile = "ben.gif"
-            gifLoops = 10
+            gifLoops = 4
             offsetX = 0
             offsetY = 0
             gifViewer(imageFile, offscreen_canvas_clock, gifLoops, offsetX, offsetY)
+            offscreen_canvas_clock.Clear()
+            offscreen_canvas_clock = matrix.SwapOnVSync(offscreen_canvas_clock)
+            offscreen_canvas_clock.Clear()
+            cm.displayMode = "clock"
 
      
 if __name__ == "__main__":
